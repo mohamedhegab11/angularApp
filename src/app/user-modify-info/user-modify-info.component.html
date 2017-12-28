@@ -1,0 +1,54 @@
+<br/>
+<br/>
+<fieldset *ngIf="oUser">
+  <legend>Add/Update User   --> id= {{oUser.id}}</legend>
+  <div class="form-group col-md-6">
+    <label for="usr">First Name:</label>
+    <input class="form-control" #myname [(ngModel)]="oUser.UserFirstName" placeholder="First Name">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Last Name:</label>
+    <input class="form-control" [(ngModel)]="oUser.UserLastName" placeholder="Last Name">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Nick Name:</label>
+    <input class="form-control" name="UserNickName" [(ngModel)]="oUser.UserNickName" placeholder="Nick Name">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Email:</label>
+    <input class="form-control" [(ngModel)]="oUser.UserEmail" placeholder="Email">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Password:</label>
+    <input class="form-control" name="UserPassword" [(ngModel)]="oUser.UserPassword" placeholder="Password" />
+  </div>
+
+  <div class="form-group col-md-6">
+    <label for="pwd">User Photo:</label>
+    <input class="form-control" type="file" placeholder="file">
+  </div>
+
+  <div class="form-group col-md-6">
+    <label for="sel1">Role:</label>
+    <select class="form-control" id="sel1" [(ngModel)]="oUser.FKRoleID">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+    </select>
+  </div>
+
+  <div class="checkbox col-md-6">
+    <label>
+      <input type="checkbox" [(ngModel)]="oUser.UserIsBlocked">Block</label>
+  </div>
+
+  <div class="form-group  col-md-12">
+    <button type="button" class="btn btn-default" (click)="update()" *ngIf="oUser.id">Update
+      </button>
+      <button type="button" class="btn btn-default" (click)="add()" *ngIf="!oUser.id">Add
+        </button>
+    <button type="button" (click)="goBack()" class="btn btn-default">Cancel</button>
+  </div>
+
+</fieldset>

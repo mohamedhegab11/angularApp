@@ -1,0 +1,82 @@
+
+<br /><br />
+<fieldset class="form-group">
+  <legend>Search</legend>
+  <div class="form-group col-md-6">
+    <label for="usr">First Name:</label>
+    <input class="form-control" placeholder="name">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Last Name:</label>
+    <input class="form-control" placeholder="name">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Nick Name:</label>
+    <input class="form-control" placeholder="name">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Email:</label>
+    <input class="form-control" placeholder="name">
+  </div>
+  <div class="form-group col-md-6">
+    <label for="pwd">Password:</label>
+    <input class="form-control" placeholder="name">
+  </div>
+
+  <div class="form-group col-md-6">
+    <label for="pwd">User Photo:</label>
+    <input type="file" class="form-control" placeholder="file">
+  </div>
+
+  <div class="form-group col-md-6">
+    <label for="sel1">Role:</label>
+    <select class="form-control" id="sel1">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+    </select>
+  </div>
+
+</fieldset>
+
+<fieldset>
+  <legend>Users List
+      <a class="btn btn-default pull-right" routerLink="/userModifyInfoComponent/0">
+        Add
+      </a>
+  </legend>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>id_UserID</th>
+        <th>User Image</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Nick name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Options</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of UserList">
+          <td>{{user.id}}_{{user.UserID}}</td>
+        <td>{{user.UserPhoto}}</td>
+        <td>{{user.UserFirstName}}</td>
+        <td>{{user.UserLastName}}</td>
+        <td>{{user.UserNickName}}</td>
+        <td>{{user.UserEmail}}</td>
+        <td>{{user.FKRoleID}}</td>
+        <td>{{user.UserIsBlocked}}</td>
+        <td><a routerLink="/userModifyInfoComponent/{{user.UserID}}">
+          Edit
+        </a></td>
+        <td><button title="delete user"
+          (click)="delete(user)">x</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+</fieldset>
