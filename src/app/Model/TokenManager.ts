@@ -16,5 +16,5 @@ export class TokenManager {
         let oTokenManager: TokenManager = JSON.parse(localStorage.getItem(this.tokenKey)) as TokenManager;
         if (!oTokenManager) return null;
         return oTokenManager;
-    }
+    }//
 }

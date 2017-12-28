@@ -54,7 +54,7 @@ export class UserModifyInfoComponent implements OnInit {
        this.oUser = User;
        console.log(User.id)
        //window.location.reload();
-       //this.location.
+       //this.location. //
      });
     }
   }

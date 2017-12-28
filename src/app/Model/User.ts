@@ -8,5 +8,5 @@ export class User {
          UserPassword:string;
          UserIsBlocked:boolean;
          UserPhoto:string;
-         FKRoleID: number;
+         FKRoleID: number;//
 }
