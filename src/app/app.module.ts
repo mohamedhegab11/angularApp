@@ -17,6 +17,7 @@ import { MessagesComponent }    from './messages/messages.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { UsersServicesService } from './users-services.service';
 import { UserModifyInfoComponent } from './user-modify-info/user-modify-info.component';
+import { LogInComponent } from './log-in/log-in.component';
 
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { UserModifyInfoComponent } from './user-modify-info/user-modify-info.com
     MessagesComponent,
     HeroSearchComponent,
     UsersListComponent,
-    UserModifyInfoComponent
+    UserModifyInfoComponent,
+    LogInComponent
   ],
   providers: [MessageService,UsersServicesService ],
   bootstrap: [ AppComponent ]

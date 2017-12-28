@@ -6,10 +6,11 @@ import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { User } from '../app/Model/User';
-import { Users } from '../app/Model/UserList';
 
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' , 
+  'Authorization':''}),
+  
 };
 
 /*Test      */
