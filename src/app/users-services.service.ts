@@ -8,9 +8,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { User } from '../app/Model/User';
 
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' , 
-  'Authorization':''}),
-  
+  headers: new HttpHeaders({ 'Content-Type': 'application/json'})
 };
 
 /*Test      */

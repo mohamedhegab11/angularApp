@@ -5,7 +5,8 @@ export class TokenManager {
     token_type: string;
     expires_in: number;
     refresh_token: string;
-
+    error : string;
+    
     private tokenKey: string = 'app_token';
 
     private store(content: Object) {
