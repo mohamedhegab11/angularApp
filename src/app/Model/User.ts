@@ -9,4 +9,5 @@ export class User {
          UserIsBlocked:boolean;
          UserPhoto:string;
          FKRoleID: number;//
+         RoleName:string;
 }

@@ -5,12 +5,13 @@ export class TokenManager {
     token_type: string;
     expires_in: number;
     refresh_token: string;
-    error : string;
+    error : string="";
+    NextExpires_in : number;
     
     private tokenKey: string = 'app_token';
 
-    private store(content: Object) {
-        localStorage.setItem(this.tokenKey, JSON.stringify(content));
+    public store() {
+        localStorage.setItem(this.tokenKey, JSON.stringify(this));
     }
 
     public GetToken() {

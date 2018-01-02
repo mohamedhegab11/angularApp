@@ -6,12 +6,26 @@ import { UsersListComponent }  from './users-list/users-list.component';
 import { UserModifyInfoComponent }  from './user-modify-info/user-modify-info.component';
 import { LogInComponent }  from './log-in/log-in.component';
 
-const routes: Routes = [
-  { path: '', redirectTo: '/LogIn', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'userModifyInfoComponent/:UserID', component: UserModifyInfoComponent },
-  { path: 'UsersList', component: UsersListComponent },
+import { LogInMasterPageComponent }  from './log-in-master-page/log-in-master-page.component';
+import { DashboardMasterPageComponent }  from './dashboard-master-page/dashboard-master-page.component';
+
+export const LogInMasterPage_Children: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'LogIn', component: LogInComponent }
+];
+
+export const DashboardMasterPage_Children: Routes = [
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'userModifyInfoComponent/:UserID', component: UserModifyInfoComponent},
+  { path: 'UsersList', component: UsersListComponent }
+];
+
+const routes: Routes = [
+  { path: '', redirectTo: 'DashboardMasterPage', pathMatch: 'full' },
+  { path: 'LogInMasterPage', component: LogInMasterPageComponent ,children:LogInMasterPage_Children},
+  { path: 'DashboardMasterPage', component: DashboardMasterPageComponent,children:DashboardMasterPage_Children }
+  ,{ path: '**', redirectTo: 'LogInMasterPage' }
 ];
 
 @NgModule({

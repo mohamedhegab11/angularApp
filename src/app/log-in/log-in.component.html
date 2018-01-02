@@ -1,17 +1,19 @@
 <h2>Login Form</h2>
 
-<form action="/action_page.php">
+<form>
   <div class="imgcontainer">
-    <img src="assets\Images\img_avatar2.png" alt="Avatar" class="avatar">
+    <img src="assets/Images/img_avatar2.png" alt="Avatar" class="avatar">
   </div>
 
   <div class="container">
-    <label><b>Username</b></label>
+    <label><b>Username</b></label>&nbsp;&nbsp;<span class="validationError">{{rfvUsername}}</span>
     <input type="text" placeholder="Enter Username" name="uname" #Username required>
 
-    <label><b>Password</b></label>
+    <label><b>Password</b></label>&nbsp;&nbsp;<span class="validationError">{{rfvPassword}}</span> 
     <input type="password" placeholder="Enter Password" name="psw" #password required>
         
+    <div class="alert alert-danger errorDiv" #ErrorMessage style="display: none">{{ErrorMessageTxt}}</div>
+
     <button (click)="logIn(Username.value,password.value);">
       Login
     </button>

@@ -23,31 +23,31 @@ export class LogInService {
   }*/
 
   /** GET heroes from the server */
-
-  createToken(sUserName: string, sPassword: string): Observable<string> {
-    let sGrant_type: string = "password";
-    /*let body = new URLSearchParams();
-  body.set('username', sUserName);
-  body.set('password', sPassword);
-  body.set('grant_type', 'password');*/
-
-    let body = ''; //'username=${sUserName}&password=${sPassword}&grant_type=${sGrant_type}';
-    return this.http.post<string>(this.userAPiURl + '/api/GetTime', body, httpOptions).pipe(
+  createToken(sUserName: string, sPassword: string): Observable<TokenManager> {
+   let body = 'username='+sUserName+'&password='+sPassword+'&grant_type=password';
+    return this.http.post<TokenManager>(this.userAPiURl + '/token', body, httpOptions).pipe(
       //console.log(user.id)
-      //tap((user: User) => this.log(`added user w/ id=${user.id}`)),
-      //catchError(this.handleError<User>('addUser'))
+      tap((oTokenManager: TokenManager) => this.log(`Get Token w/ t=${oTokenManager.access_token}`)),
+      catchError(this.handleError<TokenManager>('getToken'))
     );
   }
+
+  refreshToken(sRefresh_token: string): Observable<TokenManager> {
+    let body = 'grant_type=refresh_token&refresh_token='+sRefresh_token;
+     return this.http.post<TokenManager>(this.userAPiURl + '/token', body, httpOptions).pipe(
+       //console.log(user.id)
+       tap((oTokenManager: TokenManager) => this.log(`Get Token w/ t=${oTokenManager.access_token}`)),
+       catchError(this.handleError<TokenManager>('getToken'))
+     );
+   }
 
   // Test Api
   //headers: new HttpHeaders({ 'Content-Type': 'application/json'})
   createTime(): Observable<string> {
-    let body = '';
-    return this.http.post<string>(this.userAPiURl + '/api/Data/GetTime', body, httpOptions).pipe(
-      //console.log(user.id)
+    return this.http.get<string>(this.userAPiURl + '/api/Data/GetTime').pipe(
       tap((result: string) => this.log(`added user w/ id=${result}`)),
       catchError(this.handleError<string>('createTime'))
-    );
+   );
   }
 
 
@@ -61,7 +61,7 @@ export class LogInService {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      //console.error(error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);

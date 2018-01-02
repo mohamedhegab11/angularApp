@@ -24,25 +24,23 @@
   </div>
 
   <div class="form-group col-md-6">
-    <label for="pwd">User Photo:</label>
-    <input type="file" class="form-control" placeholder="file">
-  </div>
-
-  <div class="form-group col-md-6">
     <label for="sel1">Role:</label>
     <select class="form-control" id="sel1">
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-    </select>
+      <option value="0">All</option>
+        <option  *ngFor="let userRole of UserRoleList" value={{userRole.nRoleID}}>
+          {{userRole.sRoleName}}
+        </option>
+      </select>
   </div>
 
 </fieldset>
 
+<div class="alert alert-danger errorDiv" #ErrorMessage style="display: none">{{ErrorMessageTxt}}</div>
+<div class="alert alert-success errorDiv" #SuccessMessage style="display: none">{{SuccessMessageTxt}}</div>
+
 <fieldset>
   <legend>Users List
-      <a class="btn btn-default pull-right" routerLink="/userModifyInfoComponent/0">
+      <a class="btn btn-default pull-right" routerLink="/DashboardMasterPage/userModifyInfoComponent/0">
         Add
       </a>
   </legend>
@@ -63,14 +61,14 @@
     <tbody>
       <tr *ngFor="let user of UserList"> <!---->
           <td>{{user.id}}_{{user.UserID}}</td>
-        <td>{{user.UserPhoto}}</td>
+        <td><img *ngIf="user.UserPhoto" src="http://localhost/TestAPITokenProject/images/{{user.UserPhoto}}" style="width:150px"></td>
         <td>{{user.UserFirstName}}</td>
         <td>{{user.UserLastName}}</td>
         <td>{{user.UserNickName}}</td>
         <td>{{user.UserEmail}}</td>
-        <td>{{user.FKRoleID}}</td>
+        <td>{{user.RoleName}}</td>
         <td>{{user.UserIsBlocked}}</td>
-        <td><a routerLink="/userModifyInfoComponent/{{user.UserID}}">
+        <td><a routerLink="/DashboardMasterPage/userModifyInfoComponent/{{user.UserID}}">
           Edit
         </a></td>
         <td><button title="delete user"
