@@ -2,12 +2,14 @@ import { Component, OnInit, ElementRef, Input, ViewChild } from '@angular/core';
 
 import { User } from '../Model/User';
 import { UsersServicesService } from '../users-services.service';
+import { AddtionalDataService } from '../addtional-data.service';
 
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { fail } from 'assert';
 import { UserRoles } from '../Model/UserRoles';
 import { parse } from 'url';
+import { City } from '../Model/City';
 
 @Component({
   selector: 'app-user-modify-info',
@@ -15,6 +17,7 @@ import { parse } from 'url';
   styleUrls: ['./user-modify-info.component.css']
 })
 export class UserModifyInfoComponent implements OnInit {
+  cityList: City[];
 
   @Input() oUser: User;
 
@@ -23,26 +26,42 @@ export class UserModifyInfoComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private usersServicesService: UsersServicesService,
-    private location: Location
+    private location: Location,
+    private addtionalDataService: AddtionalDataService
   ) {
   }
 
   UserRoleList: UserRoles[];
   ngOnInit(): void {
     const id = +this.route.snapshot.paramMap.get('UserID');
-    this.getUserRolesList();
     if (id > 0) {
       this.getUser(id);
     } else {
-      this.oUser = { id: 0, UserID: 0, UserIsBlocked: false } as User;
+      this.oUser = { id: 0, UserID: 0, UserIsBlocked: false,CityId:null,CountryId:null,FKRoleID:0 } as User;
+      this.getUserRolesList();
     }
   }
   getUserRolesList(): void {
-    this.usersServicesService.getRolesList()
-      .subscribe(UserRoleList => {
-        this.UserRoleList = UserRoleList;
+    this.usersServicesService.getRolesList().
+    subscribe(UserRoleList => {
+      this.UserRoleList = UserRoleList;
+    },
+      error => {
+        this.usersServicesService.handleErrors(error, par=>
+          { this.getUserRolesList()});
       });
     //this.UserList = this.UsersServices.getUsersList();///
+  }
+
+  UpdateCityDDl(CountryId:number): void {
+    this.addtionalDataService.getCities(CountryId)
+    .subscribe(cityList => {
+      this.cityList = cityList;
+    },
+    error => {
+      this.usersServicesService.handleErrors(error, par=>
+        { this.UpdateCityDDl(CountryId)});
+    });
   }
 
   getUser(id): void {
@@ -51,6 +70,14 @@ export class UserModifyInfoComponent implements OnInit {
         this.oUser = user;
         this.oUser.UserPhoto = this.oUser.UserPhoto ?
           ("http://localhost/TestAPITokenProject/images/" + this.oUser.UserPhoto) : "";
+           this.UpdateCityDDl(this.oUser.CountryId);
+           this.getUserRolesList();
+          console.log(user);
+          
+      },
+      error => {
+        this.usersServicesService.handleErrors(error, par=>
+          { this.getUser(id)});
       });
   }
 
@@ -59,11 +86,11 @@ export class UserModifyInfoComponent implements OnInit {
   }
 
   update(): void {
+    console.log(this.oUser.UserID);
     if (this.isValideForm(this.oUser)) {
       this.oUser.UserPhoto = this.oUser.UserPhoto.replace("http://localhost/TestAPITokenProject/images/", "");
       this.usersServicesService.updateUser(this.oUser)
         .subscribe(nResult => {
-          console.log(nResult)
           if (nResult == 1) {
             this.showSuccess("Success Update");
             this.goBack();
@@ -75,17 +102,21 @@ export class UserModifyInfoComponent implements OnInit {
           } else if (nResult == -2) {
             this.showError("Exception");
           }
-        });
+        },error => {
+          this.usersServicesService.handleErrors(error, par=>
+            { this.update()});
+        }
+      );
 
     }
   }
 
   add(): void {
     if (this.isValideForm(this.oUser)== true) {
+console.log(this.oUser.UserID);
       this.usersServicesService.addUser(this.oUser)
         .subscribe(
         nResult => {
-          console.log(nResult)
           if (nResult == 1) {
             this.showSuccess("Success Insert");
             this.goBack();
@@ -94,6 +125,9 @@ export class UserModifyInfoComponent implements OnInit {
           } else if (nResult == -1) {
             this.showError("Exception");
           }
+        },error => {
+          this.usersServicesService.handleErrors(error, par=>
+            { this.add()});
         }
         );
     }
@@ -107,15 +141,10 @@ export class UserModifyInfoComponent implements OnInit {
       reader.readAsDataURL(file);
       reader.onload = () => {
         this.oUser.UserPhoto = "data:" + file.type + ";base64," + reader.result.split(',')[1];
-        console.log(reader.result.split(',')[1]);
       }
     }
   }
 
-  /*UpdateFKRoleID(ctr) {
-  this.oUser.FKRoleID =  parseInt(ctr.value);
-  console.log(ctr.value);
-  }*/
 
   clearFile() {
     this.oUser.UserPhoto = "";
@@ -161,7 +190,7 @@ export class UserModifyInfoComponent implements OnInit {
     } else {
       this.rfvRole = "";
     }
-
+//
     return isValide;
   }
 
@@ -189,5 +218,7 @@ export class UserModifyInfoComponent implements OnInit {
     }, 3000);
   }
 
+  
+  public input2Moment: any;
 
 }

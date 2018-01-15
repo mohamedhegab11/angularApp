@@ -6,14 +6,15 @@ import { UserRoles } from '../Model/UserRoles';
 import { PagerService } from '../pager-service.service';
 
 @Component({
-  selector: 'app-users-list',
-  templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.css']
+  selector: 'app-user-list-search-sort-pagination-angular',
+  templateUrl: './user-list-search-sort-pagination-angular.component.html',
+  styleUrls: ['./user-list-search-sort-pagination-angular.component.css']
 })
-export class UsersListComponent implements OnInit {
+export class UserListSearchSortPaginationAngularComponent implements OnInit {
+
   UserList: User[];
 
-  constructor(private UsersServices: UsersServicesService, private pagerService: PagerService) { }
+  constructor(private UsersServices: UsersServicesService) { }
 
 
   // pager object
@@ -26,24 +27,29 @@ export class UsersListComponent implements OnInit {
 
   ngOnInit() {
     this.getUsersList();
-    this.getUserRolesList();
   }
 
   getUserRolesList(): void {
-    this.UsersServices.getRolesList()
-      .subscribe(UserRoleList => this.UserRoleList = UserRoleList);
-    //this.UserList = this.UsersServices.getUsersList();///
-  }
+   this.UsersServices.getRolesList().
+    subscribe(UserRoleList => {
+      this.UserRoleList = UserRoleList;
+    },
+      error => {
+        this.UsersServices.handleErrors(error, par=>
+          { this.getUserRolesList()});
+      });
+    }
 
   getUsersList(): void {
-    this.UsersServices.getUsersList()
-      .subscribe(UserList => {
-        this.UserList = UserList;
-        // initialize to page 1
-        this.setPage(1);
-      }
-      );
-    //this.UserList = this.UsersServices.getUsersList();///
+    this.UsersServices.getUsersList().
+    subscribe(UserRoleList => {
+      this.UserList = UserRoleList;
+      this.getUserRolesList();
+    },
+      error => {
+        this.UsersServices.handleErrors(error, par=>
+          { this.getUsersList()});
+      });
   }
 
   delete(oUser: User): void {
@@ -64,6 +70,10 @@ export class UsersListComponent implements OnInit {
           // exception
           this.showError("exception");
         }
+      },
+      error => {
+        this.UsersServices.handleErrors(error, par=>
+          { this.delete(oUser)});
       }); // delete from server
     }
   }
@@ -93,17 +103,13 @@ export class UsersListComponent implements OnInit {
   }
 
 
-  setPage(page: number) {
-    if (page < 1 || page > this.pager.totalPages) {
-      return;
-    }
 
-    // get pager object from service
-    this.pager = this.pagerService.getPager(this.UserList.length, page,5);
-
-    // get current page of items
-    this.pagedItems = this.UserList.slice(this.pager.startIndex, this.pager.endIndex + 1);
+  //sorting
+  key: string = 'UserID';
+  reverse: boolean = false;
+  sort(key){
+    this.key = key;
+    this.reverse = !this.reverse;
   }
-
-
+  p: number = 1;
 }

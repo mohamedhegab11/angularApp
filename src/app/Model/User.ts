@@ -10,4 +10,7 @@ export class User {
          UserPhoto:string;
          FKRoleID: number;//
          RoleName:string;
+         CityId :number;
+         CountryId :number;
+         CreateDate : Date;
 }

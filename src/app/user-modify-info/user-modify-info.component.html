@@ -1,13 +1,16 @@
 <br/>
+
 <br/>
 <fieldset *ngIf="oUser">
-  <legend>Add/Update User   --> id= {{oUser.id}}</legend>
+  <legend>Add/Update User --> id= {{oUser.id}}</legend>
   <div class="form-group col-md-6">
-    <label for="usr">First Name:</label>&nbsp;&nbsp;<span class="validationError">{{rfvUserFirstName}}</span> 
+    <label for="usr">First Name:</label>&nbsp;&nbsp;
+    <span class="validationError">{{rfvUserFirstName}}</span>
     <input class="form-control" #myname [(ngModel)]="oUser.UserFirstName" placeholder="First Name">
   </div>
-  <div class="form-group col-md-6"> 
-    <label for="pwd">Last Name:</label>&nbsp;&nbsp;<span class="validationError">{{rfvUserLastName}}</span> 
+  <div class="form-group col-md-6">
+    <label for="pwd">Last Name:</label>&nbsp;&nbsp;
+    <span class="validationError">{{rfvUserLastName}}</span>
     <input class="form-control" [(ngModel)]="oUser.UserLastName" placeholder="Last Name">
   </div>
   <div class="form-group col-md-6">
@@ -15,30 +18,61 @@
     <input class="form-control" name="UserNickName" [(ngModel)]="oUser.UserNickName" placeholder="Nick Name">
   </div>
   <div class="form-group col-md-6">
-    <label type="email" for="pwd">Email:</label>&nbsp;&nbsp;<span class="validationError">{{rfvEmail}}</span> 
+    <label type="email" for="pwd">Email:</label>&nbsp;&nbsp;
+    <span class="validationError">{{rfvEmail}}</span>
     <input class="form-control" [(ngModel)]="oUser.UserEmail" placeholder="Email">
   </div>
   <div class="form-group col-md-6">
-    <label for="pwd">Password:</label>&nbsp;&nbsp;<span class="validationError">{{rfvPassword}}</span> 
+    <label for="pwd">Password:</label>&nbsp;&nbsp;
+    <span class="validationError">{{rfvPassword}}</span>
     <input class="form-control" name="UserPassword" [(ngModel)]="oUser.UserPassword" placeholder="Password" />
   </div>
 
   <div class="form-group col-md-6">
-      <img id="img_UserPhoto" src="{{oUser.UserPhoto}}" style="width:150px">
-      <br>
+    <img id="img_UserPhoto" src="{{oUser.UserPhoto}}" style="width:150px">
+    <br>
     <label>User Photo:</label>
     <input type="file" id="fi_UserPhoto" (change)="onFileChange($event)" #fileInput>
     <button type="button" class="btn btn-sm btn-default" (click)="clearFile()">clear file</button>
   </div>
 
   <div class="form-group col-md-6">
-    <label for="sel1">Role:</label>&nbsp;&nbsp;<span class="validationError">{{rfvRole}}</span> 
-    <select class="form-control" id="sel1" [(ngModel)]="oUser.FKRoleID" > <!-- (change)="UpdateFKRoleID($this)" -->
+    <label for="sel1">Role:</label>&nbsp;&nbsp;
+    <span class="validationError">{{rfvRole}}</span>
+    <select class="form-control" id="sel1" [(ngModel)]="oUser.FKRoleID">
+      <!-- (change)="UpdateFKRoleID($this)" -->
       <option value="0">Select</option>
-      <option  *ngFor="let userRole of UserRoleList" value={{userRole.nRoleID}}>
+      <option *ngFor="let userRole of UserRoleList" value={{userRole.nRoleID}}>
         {{userRole.sRoleName}}
       </option>
     </select>
+  </div>
+
+  <div class="form-group col-md-6">
+    <label for="sel1">Country:</label>
+    <select class="form-control" [(ngModel)]="oUser.CountryId" (change)="UpdateCityDDl($event.target.value)">
+      <!-- (change)="UpdateFKRoleID($this)" -->
+      <option value="null">Select</option>
+      <option value="1">Germany</option>
+      <option value="2">Canada</option>
+    </select>
+  </div>
+
+  <div class="form-group col-md-6">
+    <label for="sel1">City:</label>
+    <select class="form-control" [(ngModel)]="oUser.CityId">
+      <!-- (change)="UpdateFKRoleID($this)" -->
+      <option value="null">Select</option>
+      <option *ngFor="let city of cityList" value={{city.Id}}>
+        {{city.Name}}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group col-md-6">
+    <label for="input2">Date</label>
+    <owl-date-time [(ngModel)]="oUser.CreateDate" [dateFormat]="'DD/MM/YYYY'" [type]="'calendar'" [placeHolder]="'DD/MM/YYYY'"
+      [inputId]="'input2'"></owl-date-time>
   </div>
 
   <div class="checkbox col-md-6">
@@ -46,15 +80,22 @@
       <input type="checkbox" [(ngModel)]="oUser.UserIsBlocked">Block</label>
   </div>
 
+  <div class="checkbox col-md-6">
+    <label>
+      <input type="text" [disabled]="true" [(ngModel)]="oUser.UserID">Disable Input</label><br>
+      <br>
+      <a href="" ></a>
+  </div>
+
   <div class="form-group  col-md-12">
     <button type="button" class="btn btn-default" (click)="update()" *ngIf="oUser.UserID">Update
-      </button>
-      <button type="button" class="btn btn-default" (click)="add()" *ngIf="!oUser.UserID">Add
-        </button>
+    </button>
+    <button type="button" class="btn btn-default" (click)="add()" *ngIf="!oUser.UserID">Add
+    </button>
     <button type="button" (click)="goBack()" class="btn btn-default">Cancel</button>
   </div>
 
   <div class="alert alert-danger errorDiv" #ErrorMessage style="display: none">{{ErrorMessageTxt}}</div>
-<div class="alert alert-success errorDiv" #SuccessMessage style="display: none">{{SuccessMessageTxt}}</div>
-<!---->
+  <div class="alert alert-success errorDiv" #SuccessMessage style="display: none">{{SuccessMessageTxt}}</div>
+  <!---->
 </fieldset>

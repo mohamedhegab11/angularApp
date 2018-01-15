@@ -1,8 +1,16 @@
+<p>
+  user-list-search-sort-pagination-angular works!
+</p>
 
-<br /><br />
+<div class="container">
+  <div class="row">
 <fieldset class="form-group">
   <legend>Search</legend>
   <div class="form-group col-md-6">
+    <label for="usr">Search Key</label>
+    <input class="form-control" type="text" name="search" [(ngModel)]="filter">  
+  </div>
+  <!--<div class="form-group col-md-6">
     <label for="usr">First Name:</label>
     <input class="form-control" placeholder="name">
   </div>
@@ -21,7 +29,7 @@
   <div class="form-group col-md-6">
     <label for="pwd">Password:</label>
     <input class="form-control" placeholder="name">
-  </div>
+  </div> -->
 
   <div class="form-group col-md-6">
     <label for="sel1">Role:</label>
@@ -44,22 +52,29 @@
         Add
       </a>
   </legend>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>UserID</th>
-        <th>User Image</th>
-        <th>First name</th>
-        <th>Last name</th>
-        <th>Nick name</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Status</th>
-        <th>Options</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of pagedItems"> <!---->
+    <table class="table">
+      <thead>
+        <tr>
+            <th  (click)="sort('UserID')">UserID
+                <span class="glyphicon sort-icon" *ngIf="key =='UserID'" [ngClass]="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th>User Image</th>
+            <th (click)="sort('UserFirstName')">First name
+                <span class="glyphicon sort-icon" *ngIf="key =='UserFirstName'" [ngClass]="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th (click)="sort('UserLastName')">Last name
+                <span class="glyphicon sort-icon" *ngIf="key =='UserLastName'" [ngClass]="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th>Nick name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>CreateDate</th>
+            <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of UserList | orderBy: key : reverse | filter:filter | paginate: { itemsPerPage: 5, currentPage: p }; let i = index">
           <td>{{user.UserID}}</td>
         <td><img *ngIf="user.UserPhoto" src="http://localhost/TestAPITokenProject/images/{{user.UserPhoto}}" style="width:150px"></td>
         <td>{{user.UserFirstName}}</td>
@@ -68,32 +83,16 @@
         <td>{{user.UserEmail}}</td>
         <td>{{user.RoleName}}</td>
         <td>{{user.UserIsBlocked}}</td>
+        <td>{{user.CreateDate | date: 'dd/MM/yyyy'}}</td>
         <td><a routerLink="/DashboardMasterPage/userModifyInfoComponent/{{user.UserID}}">
           Edit
         </a></td>
         <td><button title="delete user"
           (click)="delete(user)">x</button></td>
       </tr>
-    </tbody>
-  </table>
-
-  <!-- pager -->
-  <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
-    <li [ngClass]="{disabled:pager.currentPage === 1}">
-        <a (click)="setPage(1)">First</a>
-    </li>
-    <li [ngClass]="{disabled:pager.currentPage === 1}">
-        <a (click)="setPage(pager.currentPage - 1)">Previous</a>
-    </li>
-    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
-        <a (click)="setPage(page)">{{page}}</a>
-    </li>
-    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
-        <a (click)="setPage(pager.currentPage + 1)">Next</a>
-    </li>
-    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
-        <a (click)="setPage(pager.totalPages)">Last</a>
-    </li>
-</ul>
-
+      </tbody>
+    </table>
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
 </fieldset>
+  </div>
+</div>

@@ -9,9 +9,6 @@ import { AppRoutingModule }     from './app-routing.module';
 
 import { AppComponent }         from './app.component';
 import { DashboardComponent }   from './dashboard/dashboard.component';
-import { HeroSearchComponent }  from './hero-search/hero-search.component';
-import { MessageService }       from './message.service';
-import { MessagesComponent }    from './messages/messages.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { UsersServicesService } from './users-services.service';
 import { UserModifyInfoComponent } from './user-modify-info/user-modify-info.component';
@@ -21,6 +18,16 @@ import { CookieService } from 'ngx-cookie-service';
 import { LogInMasterPageComponent } from './log-in-master-page/log-in-master-page.component';
 import { DashboardMasterPageComponent } from './dashboard-master-page/dashboard-master-page.component';
 import { SessionDataService } from './session-data.service';
+import { PagerService } from './pager-service.service';
+import { UserListSearchSortPaginationAngularComponent } from './user-list-search-sort-pagination-angular/user-list-search-sort-pagination-angular.component';
+import { Ng2SearchPipeModule } from 'ng2-search-filter'; //importing the module
+import { Ng2OrderModule } from 'ng2-order-pipe'; //importing the module
+import {NgxPaginationModule} from 'ngx-pagination';
+import { AddtionalDataService } from './addtional-data.service';
+//import { Ng2DatepickerComponent } from './ng2-datepicker/ng2-datepicker.component'; // <-- import the module
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DateTimePickerModule } from 'ng-pick-datetime';
+import { DatepickerExamplesComponent } from './datepicker-examples/datepicker-examples.component';
 
 @NgModule({
   imports: [
@@ -28,7 +35,11 @@ import { SessionDataService } from './session-data.service';
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
-
+    Ng2SearchPipeModule, //including into imports
+    Ng2OrderModule, // importing the sorting package here
+    NgxPaginationModule,
+    DateTimePickerModule,
+    BrowserAnimationsModule
     // The HttpClientInMemoryWebApiModule module intercepts HTTP requests
     // and returns simulated server responses.
     // Remove it when a real server is ready to receive requests.
@@ -39,15 +50,15 @@ import { SessionDataService } from './session-data.service';
   declarations: [
     AppComponent,
     DashboardComponent,
-    MessagesComponent,
-    HeroSearchComponent,
     UsersListComponent,
     UserModifyInfoComponent,
     LogInComponent,
     LogInMasterPageComponent,
-    DashboardMasterPageComponent
+    DashboardMasterPageComponent,
+    UserListSearchSortPaginationAngularComponent,
+    DatepickerExamplesComponent
   ],
-  providers: [MessageService,UsersServicesService, LogInService ,CookieService, SessionDataService],
+  providers: [UsersServicesService, LogInService ,CookieService, SessionDataService,PagerService, AddtionalDataService],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

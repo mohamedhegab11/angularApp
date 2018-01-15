@@ -40,7 +40,7 @@ export class LogInComponent implements OnInit {
             this.TokenData = oTokenManager;
             console.log(oTokenManager.expires_in);
             this.TokenData.NextExpires_in = (oTokenManager.expires_in * 1000) + Date.now();
-            this.sessionDataService.changeMessage(JSON.stringify(this.TokenData));
+            this.sessionDataService.changeMessage("TokenObjectStr",JSON.stringify(this.TokenData));
             this.router.navigateByUrl('/DashboardMasterPage/dashboard');
           } else {
             console.log("oTokenManager.error")

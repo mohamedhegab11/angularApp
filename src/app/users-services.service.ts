@@ -10,6 +10,7 @@ import { User } from '../app/Model/User';
 import { TokenManager } from './Model/TokenManager';
 import { UserRoles } from './Model/UserRoles';
 import { SessionDataService } from './session-data.service';
+import { LogInService } from './log-in.service';
 
 let httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -26,64 +27,72 @@ export class UsersServicesService {
   TokenObjectStr: string = "";
 
   constructor(
-    private http: HttpClient, private sessionDataService: SessionDataService) {
-    this.sessionDataService.currentMessage.subscribe(message => this.TokenObjectStr = message);
-    this.TokenData = JSON.parse(this.TokenObjectStr) as TokenManager;
+    private http: HttpClient, private sessionDataService: SessionDataService
+    , private oLogInService: LogInService) {
   }
 
   /*getUsersList(): Observable<User[]> {
     return of(Users);
   }*/
-
+ refreshTokenData():void{
+  this.TokenObjectStr = this.sessionDataService.getValue("TokenObjectStr");
+  this.TokenData = JSON.parse(this.TokenObjectStr) as TokenManager;
+ }
   /** GET heroes from the server */
   getUsersList(): Observable<User[]> {
+    this.refreshTokenData();
+    let UsersList: User[];
     return this.http.get<User[]>(this.userAPiURl + "/GetAllUsers", {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TokenData.token_type + ' ' + this.TokenData.access_token
       })
-    })
-      .pipe(
-      //tap(heroes => this.log(`fetched GetAllUsers`)),
-      //catchError(this.handleError('GetAllUsers', []))
-      );
+    }).pipe();
   }
 
   /** GET hero by id. Will 404 if id not found */
   getUserBy(UserID: number): Observable<User> {
+    this.refreshTokenData();
     const url = `${this.userAPiURl}/GetByID?nId=${UserID}`;
     return this.http.get<User>(url, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TokenData.token_type + ' ' + this.TokenData.access_token
       })
-    }).pipe(
-      tap(_ => this.log(`fetched user UserID=${UserID}`)),
-      catchError(this.handleError<User>(`getUser UserID=${UserID}`))
-      );
+    }).pipe();
   }
 
   //////// Save methods //////////
+  adjustDateForTimeOffset(dateToAdjust) {
+    if (dateToAdjust) {
+      try {
+        var offsetMs = dateToAdjust.getTimezoneOffset() * 60000;
+        return new Date(dateToAdjust.getTime() - offsetMs);
+      } catch (e) {
+        return dateToAdjust;
+      }
+    }
+    return null;
+  }
 
   /** POST: add a new user to the server */
   addUser(user: User): Observable<number> {
+    this.refreshTokenData();
     this.TokenData = JSON.parse(this.TokenObjectStr) as TokenManager;
     //console.log(this.TokenData.access_token)
+    user.CreateDate = this.adjustDateForTimeOffset(user.CreateDate);
     return this.http.post<number>(this.userAPiURl + "/addUser", user, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TokenData.token_type + ' ' + this.TokenData.access_token
       })
-    }).pipe(
-      //console.log(user.id)
-      tap((user: number) => this.log(`added user w/ id=`)),
-      catchError(this.handleError<number>('addUser'))
-      );
+    }).pipe();
   }
 
   /** DELETE: delete the hero from the server */
   deleteUser(user: User | number): Observable<number> {
-    this.TokenData = JSON.parse(this.TokenObjectStr) as TokenManager;
+    this.refreshTokenData();
+    //this.TokenData = JSON.parse(this.TokenObjectStr) as TokenManager;
     const id = typeof user === 'number' ? user : user.UserID;
     const url = `${this.userAPiURl}/Delete?nId=${id}`;
     return this.http.delete<number>(url, {
@@ -91,62 +100,78 @@ export class UsersServicesService {
         'Content-Type': 'application/json',
         'Authorization': this.TokenData.token_type + ' ' + this.TokenData.access_token
       })
-    }).pipe(
-      tap(_ => this.log(`deleted user id=${id}`)),
-      catchError(this.handleError<number>('deleteUser'))
-      );
+    }).pipe();
   }
 
   /** PUT: update the hero on the server */
   updateUser(user: User): Observable<number> {
-    this.TokenData = JSON.parse(this.TokenObjectStr) as TokenManager;
-    return this.http.put<number>(this.userAPiURl + "/editUser?nId="+user.UserID, user, {
+    //this.TokenData = JSON.parse(this.TokenObjectStr) as TokenManager;
+    //console.log(user.CreateDate)
+    this.refreshTokenData();
+    user.CreateDate = this.adjustDateForTimeOffset(user.CreateDate);
+    return this.http.put<number>(this.userAPiURl + "/editUser?nId=" + user.UserID, user, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TokenData.token_type + ' ' + this.TokenData.access_token
       })
-    }).pipe(
-      tap(_ => this.log(`updated hero id=`)),
-      catchError(this.handleError<number>('updateUser'))
-      );
+    }).pipe();
   }
 
   /** GET All Roles from the server */
   getRolesList(): Observable<UserRoles[]> {
+    this.refreshTokenData();
     return this.http.get<UserRoles[]>("http://localhost/TestAPITokenProject/api/UserRoles/GetAllUserRoles", {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.TokenData.token_type + ' ' + this.TokenData.access_token
       })
-    })
-      .pipe(
-      tap(heroes => this.log(`fetched GetAllUserRoles`)),
-      catchError(this.handleError('GetAllUserRoles', []))
-      );
+    }).pipe();
+    //return _UserRoleList;
   }
 
-  /**
-     * Handle Http operation that failed.
-     * Let the app continue.
-     * @param operation - name of the operation that failed
-     * @param result - optional value to return as the observable result
-     */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
+  handleErrors(error: any, callback: (parameter?: any) => void, _parameter?: any): void {
+    this.refreshTokenData();
+    //if got authorization error - try to update access token
+    if (error.status = 401) {
+      this.oLogInService.refreshToken(this.TokenData)
+        .subscribe(
+        oTokenManager => {
+          try {
+            if (oTokenManager != undefined && oTokenManager != null) {
+              if (oTokenManager.error == undefined) {
+                console.log("Token Refresh")
+                this.TokenData = oTokenManager;
+                this.TokenData.NextExpires_in = (oTokenManager.expires_in * 1000) + Date.now();
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+                //this.cookieService.set('TokenObject_cookie1', JSON.stringify(this.TokenData));
+                this.sessionDataService.changeMessage("TokenObjectStr", JSON.stringify(this.TokenData));
+                //console.log(JSON.stringify(this.TokenData))
+                //this.router.navigateByUrl('/DashboardMasterPage/dashboard');
+                // $injector.get('Contact')['send'](email);
+                // this[methodName]; // call it
+                //eval("this."+methodName+"()");
+                if (_parameter) {
+                  callback(_parameter)
+                } else {
+                  callback()
+                }
 
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }
-
-  /** Log a HeroService message with the MessageService */
-  private log(message: string) {
-    //this.messageService.add('HeroService: ' + message);
+              } else {
+                console.log("Token Refresh return error")
+                //this.router.navigateByUrl('LogInMasterPage/LogIn');
+              }
+            } else {
+              console.log("Token Refresh return undefined object")
+              //this.router.navigateByUrl('LogInMasterPage/LogIn');
+            }
+          } catch (e) {
+            console.log("Token Refresh exception")
+            //this.router.navigateByUrl('LogInMasterPage/LogIn');
+          }
+        });
+    }
+    else {
+      Observable.throw(error);
+    }
   }
 }

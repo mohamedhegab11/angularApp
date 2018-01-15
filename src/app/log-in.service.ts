@@ -32,13 +32,20 @@ export class LogInService {
     );
   }
 
-  refreshToken(sRefresh_token: string): Observable<TokenManager> {
-    let body = 'grant_type=refresh_token&refresh_token='+sRefresh_token;
-     return this.http.post<TokenManager>(this.userAPiURl + '/token', body, httpOptions).pipe(
+  refreshToken(oTokenData: TokenManager): Observable<TokenManager> {
+    let body = 'grant_type=refresh_token&refresh_token=' + oTokenData.refresh_token;
+ 
+    var headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    headers.append('Authorization',oTokenData.token_type + " " + oTokenData.access_token);
+    //console.log({headers: headers})
+    //console.log("body:"+ body+"   "+"Authorization "+ oTokenData.token_type + ' ' + oTokenData.access_token)
+     return this.http.post<TokenManager>(this.userAPiURl + '/token',body,{headers: headers}).pipe(
        //console.log(user.id)
-       tap((oTokenManager: TokenManager) => this.log(`Get Token w/ t=${oTokenManager.access_token}`)),
+       //tap((oTokenManager: TokenManager) => this.log(`Get Token w/ t=${oTokenManager.access_token}`)),
        catchError(this.handleError<TokenManager>('getToken'))
      );
+     
    }
 
   // Test Api
